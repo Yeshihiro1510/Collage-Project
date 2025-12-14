@@ -28,8 +28,8 @@ public class BurgerConstructor : MonoBehaviour
             if (i == "sesame bun") sesameBun++;
         }
 
-        if (cucumbers == 1 && cheese == 1 && ketchup == 1 && cutlets == 1) burger = "cheeseburger";
-        else if (specialSauce == 1 && sesameBun == 1 && cutlets == 2) burger = "big mac";
+        if (cucumbers == 1 && cheese == 1 && ketchup == 1 && cutlets == 1 && specialSauce == 0 && sesameBun == 0) burger = "cheeseburger";
+        else if (specialSauce == 1 && sesameBun == 1 && cutlets == 2 && cucumbers == 0 && cheese == 0 && ketchup == 0 ) burger = "big mac";
         else burger = "random shi";
     }
 }
