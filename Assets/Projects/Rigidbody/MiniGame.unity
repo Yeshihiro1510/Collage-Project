@@ -235,6 +235,7 @@ GameObject:
   - component: {fileID: 609958334}
   - component: {fileID: 609958333}
   - component: {fileID: 609958332}
+  - component: {fileID: 609958338}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -315,9 +316,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36231426a8a74340a88c6673bc85c48e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
+  speed: 5
   jumpForce: 10
-  _healthText: {fileID: 1031437015}
 --- !u!50 &609958335
 Rigidbody2D:
   serializedVersion: 5
@@ -416,6 +416,19 @@ Transform:
   - {fileID: 949185468}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &609958338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 609958331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1124b845679d4e6397f1ea550e30eaa5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _healthText: {fileID: 1031437015}
 --- !u!1 &906039518
 GameObject:
   m_ObjectHideFlags: 0

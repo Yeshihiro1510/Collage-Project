@@ -7,8 +7,8 @@ public class Enemy : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.TryGetComponent<PlayerController>(out var player) && _damageEnabled)
-            player.DealDamage(_damage);
+        if (collision.gameObject.TryGetComponent<Health>(out var health) && _damageEnabled)
+            health.DealDamage(_damage);
     }
 
     public void DisableDamage() => _damageEnabled = false;

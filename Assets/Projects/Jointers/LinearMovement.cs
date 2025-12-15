@@ -2,7 +2,7 @@ using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
-public class SmasherPlatform : MonoBehaviour
+public class LinearMovement : MonoBehaviour
 {
     [SerializeField] private Transform _startPoint;
     [SerializeField] private Transform _endPoint;
