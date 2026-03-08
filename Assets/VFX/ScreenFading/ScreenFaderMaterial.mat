@@ -31,6 +31,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_ef8916d36427411cb1d40e5cda7b5d7d_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 87aaca0a643d54397ba969dab4fc8875, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -46,7 +50,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _ColorMask: 15
-    - _Progress: 1
+    - _Progress: 0
+    - _ProgressOffset: 0.9
     - _RadiusOffset: 1
     - _Stencil: 0
     - _StencilComp: 8
@@ -57,6 +62,6 @@ Material:
     - _UIMaskSoftnessY: 1
     m_Colors:
     - _ClipRect: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.11115282, g: 0.031458333, b: 0.15100001, a: 0}
+    - _Color: {r: 0.053921603, g: 0.019607838, b: 0.11764706, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
