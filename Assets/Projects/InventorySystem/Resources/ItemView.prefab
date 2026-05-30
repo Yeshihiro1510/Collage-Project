@@ -262,5 +262,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d9b06131fc04bf980a407c26ca00e2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <Icon>k__BackingField: {fileID: 688019664736016541}
-  <Amount>k__BackingField: {fileID: 4210434856177455702}
+  <IconImage>k__BackingField: {fileID: 688019664736016541}
+  <AmountText>k__BackingField: {fileID: 4210434856177455702}

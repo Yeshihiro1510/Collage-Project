@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 namespace Projects.InventorySystem.Source
 {
+    [Serializable]
     [CreateAssetMenu(menuName = "Item Data")]
     public class ItemData : ScriptableObject
     {

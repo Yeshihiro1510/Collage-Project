@@ -4,179 +4,147 @@ namespace Projects.InventorySystem.Source
 {
     public class InventoryModel
     {
-        private ItemBunch[] _slots;
-        private ItemBunch _MouseBuffer => _slots[^1];
-        private ItemBunch _TrashSlot => _slots[^2];
+        private InventoryState _state;
+        private int MouseBufferI => _state.slots.Length - 1;
+        private int TrashSlotI => _state.slots.Length - 2;
 
-        public event Action<ItemTransferData[]> onSlotsChanged;
-        public event Action<ItemTransferData> onItemChanged;
-        public event Action<ItemTransferData> onMouseBufferChanged;
-        public event Action<ItemTransferData> onTrashChanged;
+        public event Action<InventoryState> onChanged;
+        public event Action<ItemStack[]> onSlotsChanged;
+        public event Action<(int i, ItemStack stack)[]> onItemsChanged;
+        
+        public void Initialize(InventoryState state)
+        {
+            _state = new InventoryState(new ItemStack[state.slots.Length]);
+            for (var i = 0; i < state.slots.Length; i++)
+            {
+                var slot = state.slots[i];
+                if (slot == ItemStack.Empty) _state.slots[i] = null;
+                else _state.slots[i] = slot;
+            }
+
+            onSlotsChanged?.Invoke(_state.slots);
+        }
 
         public void Initialize(int slots)
         {
+            _state = new InventoryState(slots);
             SetSlots(slots);
         }
 
-        public bool AddItemToAnySlot(ItemData item)
+        public void DropAll()
         {
+            var mouse = _state.slots[MouseBufferI];
+            if (mouse == null) return;
+            if (AddItemToAnyBaseSlot(mouse.data, mouse.amount))
+            {
+                _state.slots[MouseBufferI] = null;
+                InvokeItemChanged(MouseBufferI);
+            }
+        }
+
+        public void DropOne()
+        {
+            var mouse = _state.slots[MouseBufferI];
+            if (mouse == null) return;
+            if (mouse.Diff(1, out var result) && AddItemToAnyBaseSlot(mouse.data, 1))
+            {
+                _state.slots[MouseBufferI] = result;
+                InvokeItemChanged(MouseBufferI);
+            }
+        }
+
+        public bool AddItemToAnyBaseSlot(ItemData data, int amount)
+        {
+            if (amount > data.MaxStack) return false;
+
             int? emptySlot = null;
-            for (var i = 0; i < _slots.Length; i++)
+            for (var i = 0; i < TrashSlotI; i++)
             {
-                if (_slots[i] == null)
+                var stack = _state.slots[i];
+                if (stack is null) emptySlot ??= i;
+                else if (stack.Sum(new ItemStack(data, amount), out var result))
                 {
-                    emptySlot ??= i;
-                }
-                else if (_slots[i].data == item && !_slots[i].IsFull)
-                {
-                    _slots[i] = new ItemBunch(item, _slots[i].amount + 1);
-                    onSlotsChanged?.Invoke(_slots);
+                    _state.slots[i] = result;
+                    InvokeItemChanged(i);
                     return true;
                 }
             }
 
-            if (emptySlot.HasValue)
+            if (!emptySlot.HasValue) return false;
+            _state.slots[emptySlot.Value] = new ItemStack(data, amount);
+            InvokeItemChanged(emptySlot.Value);
+            return true;
+        }
+
+        public void Extract(int from, int to)
+        {
+            var fromStack = _state.slots[from];
+            var toStack = _state.slots[to];
+            if (fromStack is null) return;
+            if (fromStack.Diff(1, out var fromResult))
             {
-                _slots[emptySlot.Value] = new ItemBunch(item, 1);
-                onSlotsChanged?.Invoke(_slots);
-                return true;
+                if (toStack is null)
+                {
+                    _state.slots[to] = new ItemStack(fromStack.data, 1);
+                    _state.slots[from] = fromResult;
+                }
+                else if (toStack.Sum(new ItemStack(fromStack.data, 1), out var result))
+                {
+                    _state.slots[to] = result;
+                    _state.slots[from] = fromResult;
+                }
             }
 
-            return false;
+            InvokeItemChanged(from, to);
         }
 
+        public void Switch(int first, int second)
+        {
+            var firstStack = _state.slots[first];
+            var secondStack = _state.slots[second];
 
-        public void Separate(int i)
-        {
-            if (_MouseBuffer is null) return;
-            if (Minus(_MouseBuffer))
-        }
-
-        public void MouseSwitch(int i)
-        {
-            (_slots[i], _MouseBuffer) = (_MouseBuffer, _slots[i]);
-            InvokeItemChanged(i);
-            InvokeMouseBufferChanged();
-        }
-        
-        public void ClearSlots()
-        {
-            if (_slots is null) return;
-            for (var i = 0; i < _slots.Length; i++)
+            if (firstStack != null && secondStack != null && secondStack.Sum(firstStack, out var result))
             {
-                _slots[i] = null;
+                _state.slots[first] = null;
+                _state.slots[second] = result;
+            }
+            else
+            {
+                if (second == TrashSlotI && firstStack is not null)
+                    (_state.slots[first], _state.slots[second]) = (null, _state.slots[first]);
+                else if (first == TrashSlotI && secondStack is not null)
+                    (_state.slots[first], _state.slots[second]) = (_state.slots[second], null);
+                else (_state.slots[first], _state.slots[second]) = (_state.slots[second], _state.slots[first]);
             }
 
-            InvokeSlotsChanged();
+            InvokeItemChanged(first, second);
         }
 
-        private bool Add(int i, ItemData data)
+        public void Clear()
         {
-            if (_slots[i] is null)
+            for (var i = 0; i < _state.slots.Length; i++)
             {
-                SetItem(i, data, 1);
-                return true;
+                _state.slots[i] = null;
+                InvokeItemChanged(i);
             }
-
-            if (_slots[i].data == data && !_slots[i].IsFull)
-            {
-                SetItem(i, data, _slots[i].amount + 1);
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool Minus(int i)
-        {
-            if (_slots[i] is null) return false;
-            switch (_slots[i].amount)
-            {
-                case < 0:
-                    DeleteItem(i);
-                    return false;
-                case < 2:
-                    DeleteItem(i);
-                    return true;
-                case > 1:
-                    SetItem(i, _slots[i].data, _slots[i].amount - 1);
-                    return true;
-            }
-        }
-
-        private void SetItem(int i, ItemData data, int amount)
-        {
-            _slots[i] = new ItemBunch(data, amount);
-            InvokeItemChanged(i);
-        }
-
-        private void DeleteItem(int i)
-        {
-            _slots[i] = null;
-            InvokeItemChanged(i);
         }
 
         private void SetSlots(int amount)
         {
-            if (_slots is null)
-            {
-                _slots = new ItemBunch[amount];
-            }
-            else
-            {
-                var newSlots = new ItemBunch[_slots.Length + amount];
-                Array.Copy(_slots, 0, newSlots, 0, newSlots.Length);
-                _slots = newSlots;
-            }
-
-            InvokeSlotsChanged();
+            if (amount < 2) amount = 2;
+            var newSlots = new ItemStack[amount];
+            if (_state.slots is not null) Array.Copy(_state.slots, 0, newSlots, 0, amount);
+            _state = new InventoryState(newSlots);
+            onSlotsChanged?.Invoke(_state.slots);
         }
 
-        private void InvokeTrashChanged() =>
-            onTrashChanged?.Invoke(new ItemTransferData(_TrashSlot.data, _TrashSlot.amount, -1));
-
-        private void InvokeMouseBufferChanged() =>
-            onMouseBufferChanged?.Invoke(new ItemTransferData(_MouseBuffer.data, _MouseBuffer.amount, -1));
-
-        private void InvokeItemChanged(int i) =>
-            onItemChanged?.Invoke(new ItemTransferData(_slots[i].data, _slots[i].amount, i));
-
-        private void InvokeSlotsChanged()
+        private void InvokeItemChanged(params int[] indexes)
         {
-            var data = new ItemTransferData[_slots.Length];
-            for (var i = 0; i < _slots.Length; i++)
-            {
-                var itemBunch = _slots[i];
-                data[i] = new ItemTransferData(itemBunch.data, itemBunch.amount, i);
-            }
-
-            onSlotsChanged?.Invoke(data);
+            if (indexes.Length < 1) return;
+            var data = new (int, ItemStack)[indexes.Length];
+            for (var i = 0; i < indexes.Length; i++) data[i] = (indexes[i], _state.slots[indexes[i]]);
+            onItemsChanged?.Invoke(data);
+            onChanged?.Invoke(new InventoryState(_state.slots.Clone() as ItemStack[]));
         }
-
-        // private void InvokeItemsChanged(params int[] indexes)
-        // {
-        //     var data = new ItemTransferData[indexes.Length];
-        //     foreach (var i in indexes)
-        //     {
-        //         var itemBunch = _slots[i];
-        //         data[i] = new ItemTransferData(itemBunch.data, itemBunch.amount, i);
-        //     }
-        //
-        //     onItemChanged?.Invoke(data);
-        // }
-    }
-
-    public record ItemTransferData
-    {
-        public ItemTransferData(ItemData data, int amount, int slot)
-        {
-            Data = data;
-            Amount = amount;
-            Slot = slot;
-        }
-
-        public readonly ItemData Data;
-        public readonly int Amount;
-        public readonly int Slot;
     }
 }

@@ -8,173 +8,156 @@ namespace Projects.InventorySystem.Source
     public class InventoryView : MonoBehaviour
     {
         [Header("Components")]
-        [SerializeField] private Transform _slotsContainer;
-        [SerializeField] private Transform _itemsContainer;
-        [SerializeField] private Transform _itemsPool;
+        [SerializeField] private Transform _slotsParent;
+        [SerializeField] private Transform _itemsParent;
+        [SerializeField] private Transform _itemsPoolParent;
+        [SerializeField] private Transform _draggingParent;
         [SerializeField] private Interactable _dropZone;
-        [SerializeField] private Interactable _trashSlot;
-        private Interactable _slotViewPrefab;
-        private ItemView _itemViewPrefab;
+        [SerializeField] private Interactable _slotViewPrefab;
+        [SerializeField] private Interactable _trashPrefab;
+        [SerializeField] private ItemView _itemViewPrefab;
 
         [Header("Drop animation")]
         [SerializeField] private Ease _dropEase = Ease.OutCubic;
         [SerializeField] private float _dropDuration = 0.2f;
 
-        private (Interactable, ItemView)[] _slots = Array.Empty<(Interactable, ItemView)>();
-        private int _draggingIndex = -1;
+        private Interactable[] _slotViews = Array.Empty<Interactable>();
+        private ItemView[] _itemViews = Array.Empty<ItemView>();
         private ObjectPool<ItemView> _itemPool;
 
+        public int MouseBufferI => _itemViews.Length - 1;
+        public int TrashSlotI => _slotViews.Length - 1;
+
         public event Action<int, int> onSwitch;
-        public event Action<int, int> onSeparate;
+        public event Action<int, int> onExtract;
+        public event Action onDropAll;
+        public event Action onDropOne;
 
         private void OnEnable()
         {
-            _dropZone.onLeftClick += OnDrop;
-            _dropZone.onRightClick += OnDrop;
+            _dropZone.onLeftClick += OnDropAll;
+            _dropZone.onRightClick += OnDropOne;
         }
 
         private void OnDisable()
         {
-            _dropZone.onLeftClick -= OnDrop;
-            _dropZone.onRightClick -= OnDrop;
+            _dropZone.onLeftClick -= OnDropAll;
+            _dropZone.onRightClick -= OnDropOne;
         }
 
         public void Initialize()
         {
-            _slotViewPrefab = Resources.Load<Interactable>("SlotView");
-            _itemViewPrefab = Resources.Load<ItemView>("ItemView");
             _itemPool = new ObjectPool<ItemView>(() => Instantiate(_itemViewPrefab),
-                item =>
-                {
-                    item.gameObject.SetActive(true);
-                    item.transform.SetParent(_itemsContainer, true);
-                },
+                item => item.gameObject.SetActive(true),
                 item =>
                 {
                     item.gameObject.SetActive(false);
-                    item.transform.SetParent(_itemsPool, true);
+                    item.transform.SetParent(_itemsPoolParent, true);
                 });
         }
 
         private void Update()
         {
-            if (_draggingIndex >= 0 && _slots[_draggingIndex].Item2) _slots[_draggingIndex].Item2.transform.position = Input.mousePosition;
+            if (_itemViews is { Length: > 0 } && _itemViews[^1] is not null) _itemViews[^1].transform.position = Input.mousePosition;
+            for (var i = 0; i < _slotViews.Length; i++)
+            {
+                if (_itemViews[i] is not null) _itemViews[i].transform.position = _slotViews[i].transform.position;
+            }
         }
 
-        public void Redraw(ItemBunch?[] slots)
+        public void RedrawItems((int i, ItemStack stack)[] data)
         {
-            if (_slots.Length != slots.Length)
+            foreach (var pair in data)
             {
-                RedrawAtAll(slots);
-                return;
-            }
-
-            for (var i = 0; i < slots.Length; i++)
-            {
-                if (slots[i] is null)
+                if (pair.stack is null)
                 {
-                    if (_slots[i].Item2 is not null)
+                    if (_itemViews[pair.i]) DestroyItem(pair.i);
+                }
+                else if (pair.stack != ItemStack.Empty)
+                {
+                    if (_itemViews[pair.i])
                     {
-                        _itemPool.Release(_slots[i].Item2);
-                        _slots[i].Item2 = null;
+                        _itemViews[pair.i].IconImage.sprite = pair.stack.data.Icon;
+                        _itemViews[pair.i].AmountText.text = pair.stack.amount.ToString();
                     }
-                    continue;
-                }
-
-                if (_slots[i].Item2 is null)
-                {
-                    CreateItem(slots[i].Value.Data.Icon, slots[i].Value.Amount, i);
-                }
-                else
-                {
-                    _slots[i].Item2.Icon.sprite = slots[i].Value.Data.Icon;
-                    _slots[i].Item2.Amount.text = slots[i].Value.Amount.ToString();
+                    else CreateItem(pair.stack.data.Icon, pair.stack.amount, pair.i);
                 }
             }
         }
 
-        private void RedrawAtAll(ItemBunch?[] slots)
+        public void RedrawSlots(ItemStack[] states)
         {
-            for (var i = 0; i < _slots.Length; i++)
+            for (var i = 0; i < _itemViews.Length; i++)
             {
-                Destroy(_slots[i].Item1.gameObject);
-                if (_slots[i].Item2) _itemPool.Release(_slots[i].Item2);
+                if (i < _slotViews.Length) Destroy(_slotViews[i].gameObject);
+                if (_itemViews[i]) DestroyItem(i);
             }
 
-            _slots = new (Interactable, ItemView)[slots.Length];
+            _slotViews = new Interactable[states.Length - 1];
+            _itemViews = new ItemView[states.Length];
 
-            for (var i = 0; i < slots.Length; i++)
+            for (var i = 0; i < _slotViews.Length; i++)
             {
-                var slotView = Instantiate(_slotViewPrefab, _slotsContainer);
-                _slots[i].Item1 = slotView;
-                slotView.onLeftClick += OnLeftClick;
-                slotView.onRightClick += OnRightClick;
-                slotView.onLeftClick += _ => print("left click");
-
-                if (slots[i] is not null)
-                {
-                    CreateItem(slots[i].Value.Data.Icon, slots[i].Value.Amount, i);
-                }
+                if (i < MouseBufferI) CreateSlot(i);
+                if (states[i] is not null) CreateItem(states[i].data.Icon, states[i].amount, i);
             }
         }
 
-        private ItemView CreateItem(Sprite icon, int count, int slot)
+        private ItemView CreateItem(Sprite icon, int count, int i)
         {
             var view = _itemPool.Get();
-            view.Icon.sprite = icon;
-            view.Amount.text = count.ToString();
-            view.transform.position = _slots[slot].Item1.transform.position;
-            _slots[slot].Item2 = view;
+            view.IconImage.sprite = icon;
+            view.AmountText.text = count.ToString();
+            _itemViews[i] = view;
+            if (i < MouseBufferI)
+            {
+                view.transform.SetParent(_itemsParent);
+                view.transform.position = _slotViews[i].transform.position;
+            }
+            else
+            {
+                view.transform.SetParent(_draggingParent);
+            }
+
             return view;
         }
 
-        private void OnDrop(Interactable _)
+        private void DestroyItem(int i)
         {
-            if (_draggingIndex >= 0)
-            {
-                var pair = _slots[_draggingIndex];
-                pair.Item2.transform.DOMove(pair.Item1.transform.position, _dropDuration).SetEase(_dropEase);
-                _draggingIndex = -1;
-            }
+            _itemPool.Release(_itemViews[i]);
+            _itemViews[i] = null;
+        }
+
+        private Interactable CreateSlot(int i)
+        {
+            var prefab = i < TrashSlotI ? _slotViewPrefab : _trashPrefab;
+            var view = Instantiate(prefab, _slotsParent);
+            view.onLeftClick += OnLeftClick;
+            view.onRightClick += OnRightClick;
+            _slotViews[i] = view;
+            return view;
+        }
+
+        private void OnDropAll(Interactable _)
+        {
+            onDropAll?.Invoke();
+        }
+
+        private void OnDropOne(Interactable _)
+        {
+            onDropOne?.Invoke();
         }
 
         private void OnLeftClick(Interactable slot)
         {
-            var i = IndexOf(slot);
-            if (_draggingIndex < 0)
-            {
-                _draggingIndex = i;
-            }
-            else if (_draggingIndex == i)
-            {
-                _draggingIndex = -1;
-                _slots[i].Item2.transform.position = slot.transform.position;
-            }
-            else
-            {
-                onSwitch?.Invoke(_draggingIndex, i);
-            }
+            onSwitch?.Invoke(MouseBufferI, Array.IndexOf(_slotViews, slot));
+            print("Left click");
         }
 
         private void OnRightClick(Interactable slot)
         {
-            if (_draggingIndex >= 0)
-            {
-                onSeparate?.Invoke(_draggingIndex, IndexOf(slot));
-            }
-        }
-
-        private int IndexOf(Interactable slot)
-        {
-            for (var i = 0; i < _slots.Length; i++)
-            {
-                if (_slots[i].Item1 == slot)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
+            onExtract?.Invoke(MouseBufferI, Array.IndexOf(_slotViews, slot));
+            print("Right click");
         }
     }
 }
