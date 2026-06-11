@@ -7,7 +7,7 @@ namespace Projects.InventorySystem.Source
         [MenuItem("Inventory/Delete save")]
         public static void DeleteSave()
         {
-            ProgressSaver.Delete();
+            InventorySaver.Delete();
         }
     }
 }

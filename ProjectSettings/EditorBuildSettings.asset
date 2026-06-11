@@ -6,10 +6,13 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Projects/StudyPractice/MainMenu.unity
+    path: Assets/Projects/StudyPractice/EmptyScene.unity
+    guid: a0ef5cc3b20cb8e4d8e20f2ffc15ed8b
+  - enabled: 1
+    path: Assets/Projects/StudyPractice/MainMenuScene.unity
     guid: 34dbfdd1c698b264fa1cda3bed8d573f
   - enabled: 1
-    path: Assets/Projects/StudyPractice/Gameplay.unity
+    path: Assets/Projects/StudyPractice/GameplayScene.unity
     guid: 0f06c2359ef092941a1ec736e987d176
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
