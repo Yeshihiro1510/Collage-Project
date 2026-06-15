@@ -8,6 +8,5 @@ namespace Projects.StudyPractice.MainMenu
         [field: SerializeField] public Button PlayButton { get; private set; }
         [field: SerializeField] public Button SettingsButton { get; private set; }
         [field: SerializeField] public Button ExitButton { get; private set; }
-        public SettingsView Settings { get; set; }
     }
 }

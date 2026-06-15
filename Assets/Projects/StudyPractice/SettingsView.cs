@@ -7,6 +7,7 @@ namespace Projects.StudyPractice
     public class SettingsView : MonoBehaviour
     {
         [SerializeField] private CanvasGroup _alphaGroup;
+        [field: SerializeField] public Button CloseButton { get; private set; }
         [field: SerializeField] public Slider GeneralSlider { get; private set; }
         [field: SerializeField] public Slider MusicSlider { get; private set; }
         [field: SerializeField] public Slider SFXSlider { get; private set; }
@@ -20,15 +21,26 @@ namespace Projects.StudyPractice
         {
             _spawnPoint = spawnPoint;
             gameObject.SetActive(false);
+            CloseButton.onClick.AddListener(CloseUnsafe);
         }
 
         public void Toggle()
         {
-            if (_isOpen) Close();
-            else Open();
+            if (_isOpen) CloseUnsafe();
+            else OpenUnsafe();
+        }
+        
+        public void Open()
+        {
+            if (!_isOpen) OpenUnsafe();
         }
 
-        private void Open()
+        public void Close()
+        {
+            if (_isOpen) CloseUnsafe();
+        }
+
+        private void OpenUnsafe()
         {
             ClearAnimations();
             gameObject.SetActive(true);
@@ -39,7 +51,7 @@ namespace Projects.StudyPractice
             _isOpen = true;
         }
 
-        private void Close()
+        private void CloseUnsafe()
         {
             ClearAnimations();
             transform.DOScale(Vector3.zero, 0.6f).SetEase(Ease.OutCubic);

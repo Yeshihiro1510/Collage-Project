@@ -36,7 +36,7 @@ namespace Projects.StudyPractice.Root
         {
             _musicSource.clip = clip;
             _musicSource.Play();
-            _musicSource.DOFade(1f, 5f).From(0f).SetEase(Ease.InCirc);
+            _musicSource.DOFade(VolumeData.MusicVolume, 5f).From(0f).SetEase(Ease.InCirc);
         }
 
         public void StopMusic()

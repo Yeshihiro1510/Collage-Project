@@ -6,18 +6,12 @@ namespace Projects.StudyPractice.MainMenu
     {
         public MainMenuUIController(MainMenuUIView UI)
         {
-            UI.PlayButton.onClick.AddListener(Root.Root.Instance.LoadGameplay);
-            UI.SettingsButton.onClick.AddListener(() =>
-            {
-                if (UI.Settings == null)
-                {
-                    UI.Settings = Object.Instantiate(Resources.Load<SettingsView>("SettingsWindow"), UI.transform);
-                    var settingsController = new SettingsController(UI.Settings, Root.Root.Instance.AudioController);
-                    UI.Settings.Initialize(new Vector2(Screen.width / 2 + 250, Screen.height / 2));
-                }
+            var settingsWindow = Object.Instantiate(Resources.Load<SettingsView>("SettingsWindow"), UI.transform);
+            var settingsController = new SettingsController(settingsWindow, Root.Root.Instance.AudioController);
+            settingsWindow.Initialize(new Vector2(Screen.width / 2 + 250, Screen.height / 2));
 
-                UI.Settings.Toggle();
-            });
+            UI.PlayButton.onClick.AddListener(Root.Root.Instance.LoadGameplay);
+            UI.SettingsButton.onClick.AddListener(() => settingsWindow.Toggle());
             UI.ExitButton.onClick.AddListener(Application.Quit);
         }
     }
