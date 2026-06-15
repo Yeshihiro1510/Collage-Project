@@ -28,7 +28,8 @@ namespace Projects.StudyPractice.VFX
         public void OnPointerClick(PointerEventData eventData)
         {
             _clicked = true;
-            transform.DOPunchScale(-Vector3.one * _punchForce, .3f, 0, 0f).From(false).OnComplete(() => _clicked = false);
+            transform.DOComplete();
+            transform.DOPunchScale(-Vector3.one * _punchForce, .3f, 0, 0f).OnComplete(() => _clicked = false);
             Root.Root.Instance.AudioController.Play("click");
         }
     }

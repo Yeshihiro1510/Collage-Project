@@ -13,6 +13,7 @@ namespace Projects.StudyPractice.MainMenu
                 {
                     UI.Settings = Object.Instantiate(Resources.Load<SettingsView>("SettingsWindow"), UI.transform);
                     var settingsController = new SettingsController(UI.Settings, Root.Root.Instance.AudioController);
+                    UI.Settings.Initialize(new Vector2(Screen.width / 2 + 250, Screen.height / 2));
                 }
 
                 UI.Settings.Toggle();

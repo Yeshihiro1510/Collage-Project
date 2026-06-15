@@ -13,10 +13,12 @@ namespace Projects.StudyPractice
         [field: SerializeField] public Toggle NotificationsToggle { get; private set; }
         [field: SerializeField] public Button ResetButton { get; private set; }
 
+        private Vector2 _spawnPoint;
         private bool _isOpen;
 
-        private void Awake()
+        public void Initialize(Vector2 spawnPoint)
         {
+            _spawnPoint = spawnPoint;
             gameObject.SetActive(false);
         }
 
@@ -26,20 +28,23 @@ namespace Projects.StudyPractice
             else Open();
         }
 
-        public void Open()
+        private void Open()
         {
             ClearAnimations();
             gameObject.SetActive(true);
-            transform.DORotate(Vector3.zero, 0.5f, RotateMode.FastBeyond360).From(Vector3.forward * -360).SetEase(Ease.OutCubic);
-            _alphaGroup.DOFade(1f, 0.5f).From(0f).SetEase(Ease.OutCubic);
+            transform.position = _spawnPoint;
+            transform.DOScale(Vector3.one, 0.6f).From(Vector3.zero).SetEase(Ease.OutCubic);
+            transform.DORotate(Vector3.zero, 0.6f, RotateMode.FastBeyond360).From(Vector3.forward * -270).SetEase(Ease.OutCubic);
+            _alphaGroup.DOFade(1f, 0.3f).From(0f).SetEase(Ease.OutCubic);
             _isOpen = true;
         }
 
-        public void Close()
+        private void Close()
         {
             ClearAnimations();
-            transform.DORotate(Vector3.forward * -360, 0.5f, RotateMode.FastBeyond360).SetEase(Ease.OutCubic);
-            _alphaGroup.DOFade(0f, 0.5f)
+            transform.DOScale(Vector3.zero, 0.6f).SetEase(Ease.OutCubic);
+            transform.DORotate(Vector3.forward * -270, 0.6f, RotateMode.FastBeyond360).SetEase(Ease.OutCubic);
+            _alphaGroup.DOFade(0f, 0.3f)
                 .SetEase(Ease.OutCubic)
                 .OnComplete(() => gameObject.SetActive(false));
             _isOpen = false;
