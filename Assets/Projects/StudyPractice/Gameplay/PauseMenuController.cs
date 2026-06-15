@@ -27,6 +27,8 @@ namespace Projects.StudyPractice.Gameplay
                 verificationView.Close();
                 view.Open();
             });
+            
+            view.Initialize(view.transform.position.y, 0f);
         }
     }
 }

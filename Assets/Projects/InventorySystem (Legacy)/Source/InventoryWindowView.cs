@@ -1,11 +1,12 @@
 using System;
 using DG.Tweening;
+using Projects.StudyPractice.VFX;
 using UnityEngine;
 using UnityEngine.Pool;
 
 namespace Projects.InventorySystem__Legacy_.Source
 {
-    public class InventoryViewLegacy : MonoBehaviour
+    public class InventoryWindowView : RotationAnimationPopup
     {
         [Header("Components")]
         [SerializeField] private Transform _slotsParent;
@@ -47,6 +48,7 @@ namespace Projects.InventorySystem__Legacy_.Source
 
         public void Initialize()
         {
+            base.Initialize(transform.position);
             _itemPool = new ObjectPool<ItemView>(() => Instantiate(_itemViewPrefab),
                 item => item.gameObject.SetActive(true),
                 item =>
@@ -99,7 +101,7 @@ namespace Projects.InventorySystem__Legacy_.Source
             for (var i = 0; i < _slotViews.Length; i++)
             {
                 if (i < MouseBufferI) CreateSlot(i);
-                if (states[i] is not null) CreateItem(states[i].data.Icon, states[i].amount, i);
+                if (states[i] is not null && states[i].data is not null) CreateItem(states[i].data.Icon, states[i].amount, i);
             }
         }
 
@@ -151,13 +153,11 @@ namespace Projects.InventorySystem__Legacy_.Source
         private void OnLeftClick(Interactable slot)
         {
             onSwitch?.Invoke(MouseBufferI, Array.IndexOf(_slotViews, slot));
-            print("Left click");
         }
 
         private void OnRightClick(Interactable slot)
         {
             onExtract?.Invoke(MouseBufferI, Array.IndexOf(_slotViews, slot));
-            print("Right click");
         }
     }
 }

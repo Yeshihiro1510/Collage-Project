@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: New Item Data 2
   m_EditorClassIdentifier: 
   <Icon>k__BackingField: {fileID: -1411897647, guid: 46e2b30a98923c64282aaba229e5fb30, type: 3}
-  <Name>k__BackingField: 
+  <Name>k__BackingField: Meat
   <MaxStack>k__BackingField: 8
-  <Commentary>k__BackingField: 
+  <Commentary>k__BackingField: Medium rare one

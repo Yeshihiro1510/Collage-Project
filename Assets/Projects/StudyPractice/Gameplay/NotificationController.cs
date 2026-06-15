@@ -1,42 +1,25 @@
-using System.Collections;
+using Projects.InventorySystem__Legacy_.Source;
 using Projects.StudyPractice.Root;
+using Projects.Utils;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Projects.StudyPractice.Gameplay
 {
     public class NotificationController
     {
-        public NotificationController(NotificationView view, AudioController audioController)
+        public static string Path => Application.persistentDataPath + "/notifications_data.json";
+
+        public NotificationController(NotificationView view, AudioController audioController, ShopSystem shopSystem)
         {
-            _view = view;
-            _audioController = audioController;
-            _routine = Coroutines.Run(Routine());
-        }
+            view.Initialize(15f, -view.GetComponent<RectTransform>().rect.height);
+            shopSystem.updated += Updated;
+            return;
 
-        private readonly NotificationView _view;
-        private readonly AudioController _audioController;
-        private readonly Coroutine _routine;
-
-        private IEnumerator Routine()
-        {
-            SceneManager.activeSceneChanged += SceneChanged;
-
-            while (true)
+            void Updated(ItemData[] data)
             {
-                yield return new WaitForSeconds(5f);
-                _view.Push("Test",
-                    "Shvabudabl glab shvabudabl glab shvabudabl glab shvabudabl glab shvabudabl glab shvabudabl glab shvabudabl glab shvabudabl glab shvabudabl glab . . .",
-                    null);
-                _audioController.Play("message");
-                yield return new WaitForSeconds(3f);
-                _view.Close();
-            }
-
-            void SceneChanged(Scene from, Scene to)
-            {
-                Coroutines.Stop(_routine);
-                SceneManager.activeSceneChanged -= SceneChanged;
+                if (!JsonSavingUtil.TryGet<NotificationsData>(Path, out var result) || result.hide) return;
+                view.Push("New shop items available!!!", "Touch here to watch whats new youll see", data[0].Icon);
+                audioController.Play("message");
             }
         }
     }

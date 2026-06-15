@@ -8,8 +8,9 @@ namespace Projects.StudyPractice.Gameplay
     {
         [field: SerializeField] public Transform Content { get; private set; }
         [field: SerializeField] public Button PauseButton { get; private set; }
-        [field: SerializeField] public TMP_Text CurrencyText { get; private set; }
-        [field: SerializeField] public Image HealthBar { get; private set; }
-        [field: SerializeField] public GameObject Timer { get; private set; }
+        [field: SerializeField] public MoneyMenuView MoneyMenu { get; private set; }
+        [field: SerializeField] public TimerView Timer { get; private set; }
+        [field: SerializeField] public Button InventoryButton { get; private set; }
+        [field: SerializeField] public Button ShopButton { get; private set; }
     }
 }

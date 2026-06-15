@@ -1,15 +1,19 @@
+using System;
 using Projects.StudyPractice.VFX;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Projects.StudyPractice.Gameplay
 {
-    public class NotificationView : RushAnimationPopup
+    public class NotificationView : RushAnimationPopup, IPointerClickHandler
     {
         [SerializeField] private TMP_Text _titleText;
         [SerializeField] private TMP_Text _bodyText;
         [SerializeField] private Image _iconImage;
+
+        public event Action onClick;
 
         public void Push(string title, string body, Sprite icon)
         {
@@ -24,5 +28,7 @@ namespace Projects.StudyPractice.Gameplay
         {
             if (_isOpen) CloseUnsafe();
         }
+
+        public void OnPointerClick(PointerEventData eventData) => onClick?.Invoke();
     }
 }

@@ -1,4 +1,7 @@
+using Projects.StudyPractice.Gameplay;
 using Projects.StudyPractice.Root;
+using Projects.Utils;
+using UnityEngine;
 
 namespace Projects.StudyPractice
 {
@@ -9,7 +12,7 @@ namespace Projects.StudyPractice
             _view = view;
             _audioController = audioController;
 
-            SetView(audioController.VolumeData, false);
+            SetView(audioController.VolumeData, JsonSavingUtil.TryGet<NotificationsData>(NotificationController.Path, out var data) && data.hide);
 
             view.GeneralSlider.onValueChanged.AddListener(SliderChanged);
             view.MusicSlider.onValueChanged.AddListener(SliderChanged);
@@ -17,18 +20,22 @@ namespace Projects.StudyPractice
             view.NotificationsToggle.onValueChanged.AddListener(ToggleChanged);
             view.ResetButton.onClick.AddListener(OnReset);
 
-            return;
-            void SliderChanged(float _) => OnChange();
-            void ToggleChanged(bool _) => OnChange();
+            view.Initialize(new Vector2(Screen.width / 2, Screen.height / 2));
         }
+
 
         private readonly SettingsView _view;
         private readonly AudioController _audioController;
 
-        private void OnChange()
+        private void SliderChanged(float _)
         {
             var data = new VolumeData(_view.GeneralSlider.value, _view.MusicSlider.value, _view.SFXSlider.value);
             _audioController.Apply(data);
+        }
+
+        private void ToggleChanged(bool value)
+        {
+            JsonSavingUtil.Set(new NotificationsData(value), NotificationController.Path);
         }
 
         private void OnReset()
