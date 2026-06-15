@@ -27,8 +27,7 @@ namespace Projects.StudyPractice.Root
             Coroutines.Run(Instance.LoadFromAwake<MainMenuEntryPoint>(MAIN_MENU_SCENE, e =>
             {
                 e.Init();
-                Instance.AudioSource.Play();
-                Instance.AudioSource.DOFade(1f, 5f).From(0f).SetEase(Ease.InCirc);
+                Instance.AudioController.PlayMusic(Resources.Load<AudioClip>("The Stringini Bros - The Human Shields"));
             }));
         }
 
@@ -36,18 +35,13 @@ namespace Projects.StudyPractice.Root
         {
             RootUI = Object.Instantiate(Resources.Load<RootUIView>("RootUI"));
             RootUI.gameObject.name = "[Root UI]";
-            
-            AudioSource = new GameObject("[Audio Source]").AddComponent<AudioSource>();
-            AudioSource.clip = Resources.Load<AudioClip>("The Stringini Bros - The Human Shields");
-            AudioSource.loop = true;
-            
+            AudioController = new AudioController();
             Object.DontDestroyOnLoad(RootUI.gameObject);
-            Object.DontDestroyOnLoad(AudioSource.gameObject);
         }
 
         public static Root Instance;
         public RootUIView RootUI { get; }
-        public AudioSource AudioSource { get; }
+        public AudioController AudioController { get; }
 
         public void LoadMainMenu() => Coroutines.Run(Load<MainMenuEntryPoint>(MAIN_MENU_SCENE));
         public void LoadGameplay() => Coroutines.Run(Load<GameplayEntryPoint>(GAMEPLAY_SCENE));

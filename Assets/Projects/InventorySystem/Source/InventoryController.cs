@@ -1,17 +1,20 @@
+using Projects.Utils;
 using UnityEngine;
 
 namespace Projects.InventorySystem.Source
 {
     public class InventoryController
     {
+        public static string Path => Application.persistentDataPath + "/inventory_data.json";
+        
         public InventoryController(InventoryView view)
         {
             view.onDropAll += OnDropAll;
             view.onDropOne += OnDropOne;
 
-            _state = InventorySaver.TryGet(out var state) ? state : new InventoryState(25);
+            _state = JsonSavingUtil.TryGet<InventoryState>(Path, out var state) ? state : new InventoryState(25);
         }
-
+        
         private InventoryState _state;
 
         private void OnSwitchAll(int from, int to)
