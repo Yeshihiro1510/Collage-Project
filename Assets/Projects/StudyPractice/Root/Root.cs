@@ -24,11 +24,21 @@ namespace Projects.StudyPractice.Root
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Start()
         {
-            Coroutines.Run(Instance.LoadFromAwake<MainMenuEntryPoint>(MAIN_MENU_SCENE, e =>
+            var scene = SceneManager.GetActiveScene().name;
+            if (scene is EMPTY_SCENE or MAIN_MENU_SCENE or GAMEPLAY_SCENE)
             {
-                e.Init();
-                Instance.AudioController.PlayMusic(Resources.Load<AudioClip>("The Stringini Bros - The Human Shields"));
-            }));
+                Coroutines.Run(Instance.LoadFromAwake<MainMenuEntryPoint>(MAIN_MENU_SCENE, e =>
+                {
+                    e.Init();
+                    Instance.AudioController.PlayMusic(
+                        Resources.Load<AudioClip>("The Stringini Bros - The Human Shields"));
+                }));
+            }
+            else
+            {
+                Instance.AudioController.PlayMusic(
+                    Resources.Load<AudioClip>("The Stringini Bros - The Human Shields"));
+            }
         }
 
         private Root()
@@ -49,7 +59,8 @@ namespace Projects.StudyPractice.Root
         public void LoadMainMenu() => Coroutines.Run(Load<MainMenuEntryPoint>(MAIN_MENU_SCENE));
         public void LoadGameplay() => Coroutines.Run(Load<GameplayEntryPoint>(GAMEPLAY_SCENE));
 
-        private IEnumerator LoadFromAwake<T>(string scene, Action<T> initializer = default) where T : MonoBehaviour, IEntryPoint
+        private IEnumerator LoadFromAwake<T>(string scene, Action<T> initializer = default)
+            where T : MonoBehaviour, IEntryPoint
         {
             var process = SceneManager.LoadSceneAsync(scene);
             RootUI.ScreenFader.Progress = 1;
@@ -67,11 +78,11 @@ namespace Projects.StudyPractice.Root
             yield return RootUI.ScreenFader.In().WaitForCompletion();
             yield return SceneManager.UnloadSceneAsync(currentScene);
             yield return SceneManager.LoadSceneAsync(scene);
-            
+
             var entryPoint = Object.FindFirstObjectByType<T>();
             if (initializer == default) entryPoint.Init();
             else initializer(entryPoint);
-            
+
             yield return RootUI.ScreenFader.Out().WaitForCompletion();
         }
     }

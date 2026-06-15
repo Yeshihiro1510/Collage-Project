@@ -1,0 +1,15 @@
+using System;
+using UnityEngine;
+
+namespace Projects.InventorySystem__Legacy_.Source
+{
+    [Serializable]
+    [CreateAssetMenu(menuName = "Item Data")]
+    public class ItemData : ScriptableObject
+    {
+        [field: SerializeField] public Sprite Icon { get; private set; }
+        [field: SerializeField] public string Name { get; private set; }
+        [field: SerializeField] public int MaxStack { get; private set; }
+        [field: SerializeField] public string Commentary { get; private set; }
+    }
+}

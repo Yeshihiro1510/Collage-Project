@@ -1,5 +1,3 @@
-using Projects.InventorySystem.Source;
-using Projects.InventorySystem.Source.New;
 using Projects.StudyPractice.Root;
 using UnityEngine;
 
@@ -11,7 +9,6 @@ namespace Projects.StudyPractice.Gameplay
         {
             var UI = Instantiate(Resources.Load<GameplayUIView>("GameplayUI"));
             Root.Root.Instance.RootUI.SetSceneUI(UI.transform);
-            var inventoryController = new InventoryController(UI.InventoryView);
             var controller = new GameplayUIController(UI);
         }
     }

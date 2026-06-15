@@ -1,0 +1,31 @@
+using System.IO;
+using UnityEngine;
+
+namespace Projects.InventorySystem__Legacy_.Source
+{
+    public static class ProgressSaver
+    {
+        private static string _Path => Application.persistentDataPath + "/inventory_data.json";
+
+        public static void Set(InventoryState state)
+        {
+            var str = JsonUtility.ToJson(state);
+            File.WriteAllText(_Path, str);
+        }
+
+        public static bool TryGet(out InventoryState result)
+        {
+            if (File.Exists(_Path))
+            {
+                var json = File.ReadAllText(_Path);
+                result = JsonUtility.FromJson<InventoryState>(json);
+                if (result.slots is not null) return true;
+            }
+
+            result = null;
+            return false;
+        }
+
+        public static void Delete() => File.Delete(_Path);
+    }
+}
