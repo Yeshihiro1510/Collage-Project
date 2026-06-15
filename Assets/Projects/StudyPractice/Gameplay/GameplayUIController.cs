@@ -7,13 +7,16 @@ namespace Projects.StudyPractice.Gameplay
     {
         public GameplayUIController(GameplayUIView UI)
         {
-            var inventoryView = Object.Instantiate(Resources.Load<InventoryView>("InventoryView"), UI.Content, false)
-                .InventoryWindow;
-            var inventoryControllerLegacy = new InventoryController(inventoryView);
+            var inventoryView = Object.Instantiate(Resources.Load<InventoryView>("InventoryView"), UI.Content, false).InventoryWindow;
+            var inventoryModel = new InventoryModel();
+            var inventoryController = new InventoryController(inventoryView, inventoryModel);
+            
+            var moneyModel = new MoneyModel(0);
+            var moneyController = new MoneyController(UI.MoneyMenu, moneyModel);
 
             var shopWindowView = Object.Instantiate(Resources.Load<ShopView>("ShopWindow"), UI.Content, false);
             var shopSystem = new ShopSystem();
-            var shopController = new ShopController(shopWindowView, shopSystem);
+            var shopController = new ShopController(shopWindowView, shopSystem, moneyModel, inventoryModel);
 
             var settingsView = Object.Instantiate(Resources.Load<SettingsView>("SettingsWindow"), UI.Content, false);
             var settingsController = new SettingsController(settingsView, Root.Root.Instance.AudioController);
@@ -28,8 +31,6 @@ namespace Projects.StudyPractice.Gameplay
 
             var timerController = new TimerController(UI.Timer, shopSystem);
 
-            var moneyModel = new MoneyModel(0);
-            var moneyController = new MoneyController(UI.MoneyMenu, moneyModel);
 
             UI.PauseButton.onClick.AddListener(() =>
             {

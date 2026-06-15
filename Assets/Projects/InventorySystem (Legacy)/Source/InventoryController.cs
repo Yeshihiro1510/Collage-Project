@@ -1,29 +1,20 @@
-using UnityEngine;
-
 namespace Projects.InventorySystem__Legacy_.Source
 {
     public class InventoryController
     {
-        public InventoryController(InventoryWindowView windowView)
+        public InventoryController(InventoryWindowView windowView, InventoryModel model)
         {
-            _model = new InventoryModel();
-
-            _model.onSlotsChanged += windowView.RedrawSlots;
-            _model.onItemsChanged += windowView.RedrawItems;
-            _model.onChanged += ProgressSaver.Set;
-            windowView.onSwitch += _model.Switch;
-            windowView.onExtract += _model.Extract;
-            windowView.onDropAll += _model.DropAll;
-            windowView.onDropOne += _model.DropOne;
+            model.onSlotsChanged += windowView.RedrawSlots;
+            model.onItemsChanged += windowView.RedrawItems;
+            model.onChanged += ProgressSaver.Set;
+            windowView.onSwitch += model.Switch;
+            windowView.onExtract += model.Extract;
+            windowView.onDropAll += model.DropAll;
+            windowView.onDropOne += model.DropOne;
 
             windowView.Initialize();
-            if (ProgressSaver.TryGet(out var state) && state.slots.Length > 0) _model.Initialize(state);
-            else _model.Initialize(25);
-
-            var food = Resources.LoadAll<ItemData>("");
-            _model.AddItemToAnyBaseSlot(food[Random.Range(0, food.Length)], 1);
+            if (ProgressSaver.TryGet(out var state) && state.slots.Length > 0) model.Initialize(state);
+            else model.Initialize(25);
         }
-
-        private readonly InventoryModel _model;
     }
 }

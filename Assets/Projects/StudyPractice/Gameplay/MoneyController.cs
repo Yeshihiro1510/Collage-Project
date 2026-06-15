@@ -6,6 +6,7 @@ namespace Projects.StudyPractice.Gameplay
         {
             view.AddMoneyButton.onClick.AddListener(() => model.Add(250));
             model.moneyChanged += v => view.Text.SetText(v.ToString());
+            model.Update();
         }
     }
 }

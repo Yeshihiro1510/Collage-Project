@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Projects.StudyPractice.Gameplay
 {
@@ -11,20 +12,25 @@ namespace Projects.StudyPractice.Gameplay
         }
 
         private int _money;
-        
+
         public event Action<int> moneyChanged;
 
         public bool TryGet(int amount)
         {
-            if (_money <= amount) return false;
+            if (_money < amount) return false;
             _money -= amount;
-            moneyChanged?.Invoke(_money);
+            Update();
             return true;
         }
 
         public void Add(int amount)
         {
             _money += amount;
+            Update();
+        }
+
+        public void Update()
+        {
             moneyChanged?.Invoke(_money);
         }
     }

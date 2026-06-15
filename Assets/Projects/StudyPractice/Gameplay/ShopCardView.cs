@@ -1,11 +1,12 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Projects.StudyPractice.Gameplay
 {
-    public class ShopCardView : MonoBehaviour
+    public class ShopCardView : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] private Image _image;
         [SerializeField] private TMP_Text _titleText;
@@ -19,5 +20,7 @@ namespace Projects.StudyPractice.Gameplay
             _bodyText.text = body;
             _image.sprite = icon;
         }
+
+        public void OnPointerClick(PointerEventData eventData) => onBuy?.Invoke();
     }
 }

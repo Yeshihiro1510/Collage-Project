@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Projects.InventorySystem__Legacy_.Source;
 using Projects.StudyPractice.VFX;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Pool;
 
 namespace Projects.StudyPractice.Gameplay
@@ -21,20 +22,22 @@ namespace Projects.StudyPractice.Gameplay
                 v => v.gameObject.SetActive(true),
                 v => v.gameObject.SetActive(false));
         }
-
-        public void Draw(params ItemData[] data)
+        
+        public void Draw(string title, string description, Sprite icon, UnityAction onBuy)
         {
-            foreach (var itemData in data)
-            {
-                var view = _pool.Get();
-                view.Init(itemData.Name, itemData.Commentary, itemData.Icon);
-                _views.Add(view);
-            }
+            var view = _pool.Get();
+            view.Init(title, description, icon);
+            view.onBuy.AddListener(onBuy);
+            _views.Add(view);
         }
 
         public void Clear()
         {
-            foreach (var view in _views) _pool.Release(view);
+            foreach (var view in _views)
+            {
+                _pool.Release(view);
+                view.onBuy.RemoveAllListeners();
+            }
             _views.Clear();
         }
     }
