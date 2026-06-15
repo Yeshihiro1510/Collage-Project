@@ -6,6 +6,7 @@ namespace Projects.StudyPractice.Gameplay
 {
     public class GameplayUIView : MonoBehaviour
     {
+        [field: SerializeField] public Transform Content { get; private set; }
         [field: SerializeField] public Button PauseButton { get; private set; }
         [field: SerializeField] public TMP_Text CurrencyText { get; private set; }
         [field: SerializeField] public Image HealthBar { get; private set; }

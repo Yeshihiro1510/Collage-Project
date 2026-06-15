@@ -1,3 +1,4 @@
+using Projects.InventorySystem__Legacy_.Source;
 using UnityEngine;
 
 namespace Projects.StudyPractice.Gameplay
@@ -17,6 +18,10 @@ namespace Projects.StudyPractice.Gameplay
             var notificationsView = Object.Instantiate(Resources.Load<NotificationView>("NotificationView"), UI.transform);
             var notificationController = new NotificationController(notificationsView, Root.Root.Instance.AudioController);
             notificationsView.Initialize(15f, -notificationsView.GetComponent<RectTransform>().rect.height);
+            
+            var inventoryView = Object.Instantiate(Resources.Load<InventoryViewLegacy>("InventoryView"), UI.transform);
+            inventoryView.Initialize();
+            var inventoryControllerLegacy = new InventoryControllerLegacy(inventoryView);
 
             UI.PauseButton.onClick.AddListener(() =>
             {
