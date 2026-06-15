@@ -1,4 +1,5 @@
 using Projects.InventorySystem.Source;
+using Projects.InventorySystem.Source.New;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

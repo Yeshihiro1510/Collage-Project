@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace Projects.StudyPractice
 {
-    public class SettingsView : AnimatedPopup
+    public class SettingsView : RotationAnimationPopup
     {
         [field: SerializeField] public Button CloseButton { get; private set; }
         [field: SerializeField] public Slider GeneralSlider { get; private set; }

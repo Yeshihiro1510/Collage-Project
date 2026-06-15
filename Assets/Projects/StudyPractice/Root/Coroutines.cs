@@ -26,6 +26,7 @@ namespace Projects.StudyPractice.Root
             }
         }
         private static Coroutines _instance;
-        public static void Run(IEnumerator routine) => Instance.StartCoroutine(routine);
+        public static Coroutine Run(IEnumerator routine) => Instance.StartCoroutine(routine);
+        public static void Stop(Coroutine routine) => Instance.StopCoroutine(routine);
     }
 }

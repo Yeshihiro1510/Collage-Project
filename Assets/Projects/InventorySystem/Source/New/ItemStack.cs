@@ -1,6 +1,6 @@
 using System;
 
-namespace Projects.InventorySystem.Source
+namespace Projects.InventorySystem.Source.New
 {
     [Serializable]
     public readonly struct ItemStack : IEquatable<ItemStack>

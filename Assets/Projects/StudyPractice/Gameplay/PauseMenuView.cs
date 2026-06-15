@@ -1,54 +1,23 @@
-using DG.Tweening;
+using Projects.StudyPractice.VFX;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Projects.StudyPractice.Gameplay
 {
-    public class PauseMenuView : MonoBehaviour
+    public class PauseMenuView : RushAnimationPopup
     {
         [field: SerializeField] public Button ContinueButton { get; private set; }
         [field: SerializeField] public Button SettingsButton { get; private set; }
         [field: SerializeField] public Button BackButton { get; private set; }
         
-        [SerializeField] private CanvasGroup _alphaGroup;
-        private float _openYPosition;
-        private bool _isOpen;
-
-        public void Initialize(float openYPosition)
-        {
-            _openYPosition = openYPosition;
-            gameObject.SetActive(false);
-        }
-        
-        public void Toggle()
-        {
-            if (_isOpen) Close();
-            else Open();
-        }
-        
         public void Open()
         {
-            ClearAnimations();
-            gameObject.SetActive(true);
-            transform.DOMoveY(_openYPosition, 0.3f).From(0f).SetEase(Ease.OutCubic);
-            _alphaGroup.DOFade(1f, 0.3f).From(0f).SetEase(Ease.OutCubic);
-            _isOpen = true;
+            if (!_isOpen) OpenUnsafe();
         }
 
         public void Close()
         {
-            ClearAnimations();
-            transform.DOMoveY(0f, 0.3f).SetEase(Ease.OutCubic);
-            _alphaGroup.DOFade(0f, 0.3f)
-                .SetEase(Ease.OutCubic)
-                .OnComplete(() => gameObject.SetActive(false));
-            _isOpen = false;
-        }
-
-        private void ClearAnimations()
-        {
-            transform.DOKill();
-            _alphaGroup.DOKill();
+            if (_isOpen) CloseUnsafe();
         }
     }
 }

@@ -1,7 +1,7 @@
 using Projects.Utils;
 using UnityEngine;
 
-namespace Projects.InventorySystem.Source
+namespace Projects.InventorySystem.Source.New
 {
     public class InventoryController
     {

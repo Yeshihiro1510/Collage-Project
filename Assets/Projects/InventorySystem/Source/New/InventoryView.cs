@@ -4,7 +4,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Pool;
 
-namespace Projects.InventorySystem.Source
+namespace Projects.InventorySystem.Source.New
 {
     public class InventoryView : MonoBehaviour
     {

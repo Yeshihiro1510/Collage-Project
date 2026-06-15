@@ -1,3 +1,4 @@
+using Projects.InventorySystem.Source.New;
 using Projects.Utils;
 using UnityEditor;
 
