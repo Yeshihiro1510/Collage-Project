@@ -1,9 +1,9 @@
 using System;
 
-namespace Projects.StudyPractice.MainMenu
+namespace Projects.StudyPractice.Root
 {
     [Serializable]
-    public readonly struct VolumeData
+    public struct VolumeData
     {
         public VolumeData(float generalVolume, float musicVolume, float sfxVolume)
         {
@@ -12,8 +12,8 @@ namespace Projects.StudyPractice.MainMenu
             SFXVolume = sfxVolume;
         }
 
-        public readonly float GeneralVolume;
-        public readonly float MusicVolume;
-        public readonly float SFXVolume;
+        public float GeneralVolume;
+        public float MusicVolume;
+        public float SFXVolume;
     }
 }

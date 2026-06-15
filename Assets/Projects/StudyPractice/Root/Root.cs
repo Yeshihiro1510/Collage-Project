@@ -35,8 +35,11 @@ namespace Projects.StudyPractice.Root
         {
             RootUI = Object.Instantiate(Resources.Load<RootUIView>("RootUI"));
             RootUI.gameObject.name = "[Root UI]";
+            var camera = Object.Instantiate(Resources.Load<Camera>("RootCamera"));
+            camera.name = "[Root Camera]";
             AudioController = new AudioController();
             Object.DontDestroyOnLoad(RootUI.gameObject);
+            Object.DontDestroyOnLoad(camera.gameObject);
         }
 
         public static Root Instance;

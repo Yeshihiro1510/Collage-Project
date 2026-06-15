@@ -2,7 +2,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Projects.StudyPractice
+namespace Projects.StudyPractice.VFX
 {
     public class GUIPressableFX : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
     {
@@ -29,6 +29,7 @@ namespace Projects.StudyPractice
         {
             _clicked = true;
             transform.DOPunchScale(-Vector3.one * _punchForce, .3f, 0, 0f).From(false).OnComplete(() => _clicked = false);
+            Root.Root.Instance.AudioController.Play("click");
         }
     }
 }

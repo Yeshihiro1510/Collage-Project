@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Projects.StudyPractice.MainMenu;
 using Projects.Utils;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Projects.StudyPractice.Root
 {
@@ -11,23 +14,23 @@ namespace Projects.StudyPractice.Root
         {
             _musicSource = new GameObject("[Music Source]").AddComponent<AudioSource>();
             _musicSource.loop = true;
-
             _SFXSource = new GameObject("[SFX Source]").AddComponent<AudioSource>();
-
-            if (JsonSavingUtil.TryGet<VolumeData>(Path, out var data))
-            {
-                _musicSource.volume = data.MusicVolume * data.GeneralVolume;
-                _SFXSource.volume = data.SFXVolume * data.GeneralVolume;
-            }
-
             Object.DontDestroyOnLoad(_musicSource.gameObject);
             Object.DontDestroyOnLoad(_SFXSource.gameObject);
+
+            if (JsonSavingUtil.TryGet<VolumeData>(Path, out var data)) Apply(data);
+            else SetDefault();
+
+            _audioClips = Resources.LoadAll<AudioResource>("").ToDictionary(p => p.name, p => p);
         }
 
-        public static string Path => Application.persistentDataPath + "/volume_data.json";
+        private static string Path => Application.persistentDataPath + "/volume_data.json";
 
         private readonly AudioSource _musicSource;
         private readonly AudioSource _SFXSource;
+
+        private readonly Dictionary<string, AudioResource> _audioClips;
+        public VolumeData VolumeData { get; private set; }
 
         public void PlayMusic(AudioClip clip)
         {
@@ -41,16 +44,29 @@ namespace Projects.StudyPractice.Root
             _musicSource.Stop();
         }
 
-        public void Play(AudioClip clip)
+        public void Play(string name)
         {
-            _SFXSource.PlayOneShot(clip);
+            _SFXSource.resource = _audioClips[name];
+            _SFXSource.Play();
         }
 
         public void Apply(VolumeData data)
         {
+            VolumeData = data;
             _musicSource.volume = data.MusicVolume * data.GeneralVolume;
             _SFXSource.volume = data.SFXVolume * data.GeneralVolume;
-            JsonSavingUtil.Set(data, Path);
+            Save();
+        }
+
+        public void Save()
+        {
+            JsonSavingUtil.Set(VolumeData, Path);
+        }
+
+        public void SetDefault()
+        {
+            var defaultData = new VolumeData(1f,1f,1f);
+            Apply(defaultData);
         }
     }
 }

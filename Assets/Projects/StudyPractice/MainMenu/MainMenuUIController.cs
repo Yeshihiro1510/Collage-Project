@@ -11,7 +11,7 @@ namespace Projects.StudyPractice.MainMenu
             {
                 if (UI.Settings == null)
                 {
-                    UI.Settings = Object.Instantiate(Resources.Load<SettingsView>("SettingsPopup"), UI.transform);
+                    UI.Settings = Object.Instantiate(Resources.Load<SettingsView>("SettingsWindow"), UI.transform);
                     var settingsController = new SettingsController(UI.Settings, Root.Root.Instance.AudioController);
                 }
 
