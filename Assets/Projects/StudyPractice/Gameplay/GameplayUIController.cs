@@ -6,18 +6,24 @@ namespace Projects.StudyPractice.Gameplay
     {
         public GameplayUIController(GameplayUIView UI)
         {
-            var settingsWindow = Object.Instantiate(Resources.Load<SettingsView>("SettingsWindow"), UI.transform);
-            var settingsController = new SettingsController(settingsWindow, Root.Root.Instance.AudioController);
-            settingsWindow.Initialize(new Vector2(Screen.width / 2, Screen.height / 2));
+            var settingsView = Object.Instantiate(Resources.Load<SettingsView>("SettingsWindow"), UI.transform);
+            var settingsController = new SettingsController(settingsView, Root.Root.Instance.AudioController);
+            settingsView.Initialize(new Vector2(Screen.width / 2, Screen.height / 2));
             
             var pauseMenu = Object.Instantiate(Resources.Load<PauseMenuView>("PauseMenu"), UI.transform, false);
-            var pauseController = new PauseMenuController(pauseMenu, settingsWindow);
+            var pauseController = new PauseMenuController(UI, pauseMenu, settingsView);
             pauseMenu.Initialize(pauseMenu.transform.position.y);
 
-            UI.PauseButton.onClick.AddListener(pauseMenu.Toggle);
-            UI.PauseButton.onClick.AddListener(settingsWindow.Close);
+            UI.PauseButton.onClick.AddListener(()=>
+            {
+                settingsView.Close();
+                pauseMenu.Toggle();
+            });
+            settingsView.CloseButton.onClick.AddListener(() =>
+            {
+                settingsView.Close();
+                pauseMenu.Open();
+            });
         }
-
-        private readonly GameplayUIView UI;
     }
 }

@@ -18,7 +18,6 @@ namespace Projects.StudyPractice.Gameplay
         {
             _openYPosition = openYPosition;
             gameObject.SetActive(false);
-            ContinueButton.onClick.AddListener(Close);
         }
         
         public void Toggle()
@@ -27,7 +26,7 @@ namespace Projects.StudyPractice.Gameplay
             else Open();
         }
         
-        private void Open()
+        public void Open()
         {
             ClearAnimations();
             gameObject.SetActive(true);
